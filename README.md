@@ -12,7 +12,7 @@ void fmtprint_internal(const char *str) {
 }
 
 template <class T, class... Targs>
-void fmtprint_internal(int strlen, const char *str, const T& data1, const Targs&... datarest) {
+void fmtprint_internal(size_t strlen, const char *str, const T& data1, const Targs&... datarest) {
     for (int i = 0; i < strlen - 1; i++) {
         char c1 = str[i];
         char c2 = str[i + 1];
@@ -29,10 +29,15 @@ void fmtprint_internal(int strlen, const char *str, const T& data1, const Targs&
 
 template <class... Targs>
 void fmtprint(const char *str, const Targs&... data) {
-    size_t strlen = 0;
-    for (char c = str[strlen]; c != 0; strlen++, c = str[strlen]);
+    if constexpr (sizeof... (data) == 0) {
+        return fmtprint_internal(str);
+    }
+    else {
+        size_t strlen = 0;
+        for (char c = str[strlen]; c != 0; strlen++, c = str[strlen]);
 
-    fmtprint_internal(strlen, str, data...);
+        fmtprint_internal(strlen, str, data...);
+    }
 }
 
 int main() {
